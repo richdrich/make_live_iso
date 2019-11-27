@@ -24,7 +24,7 @@ To boot on an actual machine, you can write a USB or SD card, or if you have ret
 
 Ensure you have Docker running (and no other Docker containers active (fixme))
 
-Clone this repo: `git clone BLAH` and cd to it `cd make_live_iso`
+Clone this repo: `git clone https://github.com/richdrich/make_live_iso.git` and cd to it `cd make_live_iso`
 
 Build the image (takes a while): `./docker_build_image`
 
