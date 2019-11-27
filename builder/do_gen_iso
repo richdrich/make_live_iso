@@ -1,0 +1,37 @@
+# include to generate ISO
+# set ISO_DOCKER_CONTAINER to the container name
+
+if docker ps -a | grep $ISO_DOCKER_CONTAINER; then
+  container_id=`docker ps | tail -1 | awk '{ print $1 }'`
+  echo $ISO_DOCKER_CONTAINER image is running: stop it: docker stop $container_id
+  exit
+fi
+
+ps_rows=`docker ps -a | wc -l`
+
+if [ "$ps_rows" -gt 1 ]; then
+  echo Multiple docker images not supported:
+  docker ps -a
+  exit
+fi
+
+docker run --privileged -it -d $ISO_DOCKER_CONTAINER
+
+until docker ps -a | grep $ISO_DOCKER_CONTAINER; do
+  echo "Wait for docker run"
+done
+
+container_id=`docker ps | tail -1 | awk '{ print $1 }'`
+
+docker exec -it $container_id /root/pre_custom
+
+docker exec --privileged -it $container_id /root/run_chroot_scripts
+
+docker exec -it $container_id /root/post_custom
+
+docker exec --privileged -it $container_id /root/build_iso
+
+docker cp $container_id:/live-ubuntu-from-scratch/live_stick.iso ../out
+
+docker stop $container_id
+docker rm $container_id
