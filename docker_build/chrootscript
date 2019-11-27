@@ -1,0 +1,66 @@
+#!/bin/bash
+
+echo "Start chrootscript - system level and xfce4 chroot"
+
+echo "ubuntu-fs-live" > /etc/hostname
+
+cat <<EOF > /etc/apt/sources.list
+deb http://us.archive.ubuntu.com/ubuntu/ eoan main restricted universe multiverse
+deb-src http://us.archive.ubuntu.com/ubuntu/ eoan main restricted universe multiverse
+
+deb http://us.archive.ubuntu.com/ubuntu/ eoan-security main restricted universe multiverse
+deb-src http://us.archive.ubuntu.com/ubuntu/ eoan-security main restricted universe multiverse
+
+deb http://us.archive.ubuntu.com/ubuntu/ eoan-updates main restricted universe multiverse
+deb-src http://us.archive.ubuntu.com/ubuntu/ eoan-updates main restricted universe multiverse
+EOF
+
+echo 'update and install systemv controller'
+echo "APT::Acquire::Retries \"3\";" > /etc/apt/apt.conf.d/80-retries
+apt-get update
+apt-get install -y systemd-sysv
+
+echo 'Configure (hex) machine-id and divert'
+dbus-uuidgen > /etc/machine-id
+ln -fs /etc/machine-id /var/lib/dbus/machine-id
+
+# dpkg-divert is the utility used to set up and update the list of diversions
+dpkg-divert --local --rename --add /sbin/initctl
+ln -s /bin/true /sbin/initctl
+
+echo 'install grub without prompting'
+
+DEBIAN_FRONTEND=noninteractive apt-get install -y grub-pc
+
+echo 'install ubuntu to chroot - around 874 packages'
+
+# TODO: slim
+apt-get install -y \
+    ubuntu-standard \
+    casper \
+    lupin-casper \
+    discover \
+    laptop-detect \
+    os-prober \
+    network-manager \
+    resolvconf \
+    net-tools \
+    wireless-tools \
+    wpagui \
+    locales \
+    linux-generic \
+    xfwm4 \
+    xfce4-panel \
+    xfce4-settings \
+    xfce4-session \
+    xfce4-terminal \
+    xfdesktop4 \
+    xfce4-taskmanager \
+    tango-icon-theme
+
+echo 'clean up'
+
+apt-get autoremove -y
+apt-get clean
+
+echo "Ends chroot script"

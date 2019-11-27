@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+echo "post_custom_stub replace this to do any post install stuff outside chroot"

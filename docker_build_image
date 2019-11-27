@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+docker build docker_build --tag make_live_iso

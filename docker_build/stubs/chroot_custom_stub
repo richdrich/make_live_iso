@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+echo "chroot_custom_stub - replace this to install custom packages and config"

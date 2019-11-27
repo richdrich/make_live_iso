@@ -1,0 +1,4 @@
+#!/bin/bash
+container_id=`docker ps | tail -1 | awk '{ print $1 }'`
+docker stop $container_id
+docker container rm $container_id

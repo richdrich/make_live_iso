@@ -1,0 +1,43 @@
+#!/usr/bin/env bash -e
+
+# Run me on desktop, not in docker
+# before running this we have built our (customised) make_live_iso container and tagged it as make_live_iso
+# (just run ./docker_build_image from top level)
+
+# runs in own location
+cd "$(dirname "$0")"
+
+if docker ps -a | grep make_live_iso; then
+  container_id=`docker ps | tail -1 | awk '{ print $1 }'`
+  echo make_live_iso image is running: stop it: docker stop $container_id
+  exit
+fi
+
+ps_rows=`docker ps -a | wc -l`
+
+if [ "$ps_rows" -gt 1 ]; then
+  echo Multiple docker images not supported:
+  docker ps -a
+  exit
+fi
+
+docker run --privileged -it -d make_live_iso
+
+until docker ps -a | grep make_live_iso; do
+  echo "Wait for docker run"
+done
+
+container_id=`docker ps | tail -1 | awk '{ print $1 }'`
+
+docker exec -it $container_id /root/pre_custom
+
+docker exec --privileged -it $container_id /root/run_chroot_scripts
+
+docker exec -it $container_id /root/post_custom
+
+docker exec --privileged -it $container_id /root/build_iso
+
+docker cp $container_id:/live-ubuntu-from-scratch/live_stick.iso ../out
+
+echo docker stop $container_id
+

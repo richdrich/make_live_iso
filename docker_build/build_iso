@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+set -e
+set -x
+
+cd /live-ubuntu-from-scratch
+
+mkdir -p image/casper && mkdir -p image/isolinux && mkdir -p image/install && cp chroot/boot/vmlinuz-**-**-generic image/casper/vmlinuz && cp chroot/boot/initrd.img-**-**-generic image/casper/initrd
+
+# TODO: memtest
+# bios cp chroot/boot/memtest86+.bin image/install/memtest86+
+#wget --progress=dot https://www.memtest86.com/downloads/memtest86-usb.zip -O image/install/memtest86-usb.zip && unzip -p image/install/memtest86-usb.zip memtest86-usb.img > image/install/memtest86 && rm image/install/memtest86-usb.zip
+
+touch image/ubuntu
+mv /root/grub.cfg /live-ubuntu-from-scratch/image/isolinux
+
+chroot chroot dpkg-query -W --showformat='${Package} ${Version}\n' | tee image/casper/filesystem.manifest
+
+cp -v image/casper/filesystem.manifest image/casper/filesystem.manifest-desktop && sed -i '/casper/d' image/casper/filesystem.manifest-desktop && sed -i '/discover/d' image/casper/filesystem.manifest-desktop && sed -i '/laptop-detect/d' image/casper/filesystem.manifest-desktop && sed -i '/os-prober/d' image/casper/filesystem.manifest-desktop
+
+mksquashfs chroot image/casper/filesystem.squashfs
+#du -sx --block-size=1 chroot | cut -f1 > image/casper/filesystem.size
+du -sx --block-size=1 image/casper/filesystem.squashfs | cut -f1 > image/casper/filesystem.size
+
+mv /root/README.diskdefines image
+
+cd /live-ubuntu-from-scratch/image
+
+# Create a grub UEFI image
+grub-mkstandalone --format=x86_64-efi --output=isolinux/bootx64.efi --locales="" --fonts="" "boot/grub/grub.cfg=isolinux/grub.cfg"
+
+# Create a FAT16 UEFI boot disk image containing the EFI bootloader
+cd /live-ubuntu-from-scratch/image/isolinux
+dd if=/dev/zero of=efiboot.img bs=1M count=10 && mkfs.vfat efiboot.img && mmd -i efiboot.img efi efi/boot && mcopy -i efiboot.img ./bootx64.efi ::efi/boot/
+
+# Create a dummy partition with tarball
+cd /live-ubuntu-from-scratch/image
+echo 'hello dummy' >info.txt && tar cvf info.tar info.txt
+
+# Create a grub BIOS image
+cd /live-ubuntu-from-scratch/image
+grub-mkstandalone --format=i386-pc --output=isolinux/core.img --install-modules="linux16 linux normal iso9660 biosdisk memdisk search tar ls" --modules="linux16 linux normal iso9660 biosdisk search" --locales="" --fonts="" "boot/grub/grub.cfg=isolinux/grub.cfg"
+
+# Combine a bootable Grub cdboot.img
+cat /usr/lib/grub/i386-pc/cdboot.img isolinux/core.img > isolinux/bios.img
+
+/bin/bash -c "(find . -type f -print0 | xargs -0 md5sum | grep -v "\./md5sum.txt" > md5sum.txt)"
+
+# Create iso from the image directory using the command-line
+xorriso -as mkisofs -iso-level 3 -full-iso9660-filenames -volid "Ubuntu from scratch" \
+  -eltorito-boot boot/grub/bios.img -no-emul-boot -boot-load-size 4 -boot-info-table \
+  --eltorito-catalog boot/grub/boot.cat --grub2-boot-info --grub2-mbr /usr/lib/grub/i386-pc/boot_hybrid.img \
+  -eltorito-alt-boot -e EFI/efiboot.img -no-emul-boot -append_partition 2 0xef isolinux/efiboot.img \
+  -append_partition 3 0x83 info.tar \
+  -output "../live_stick.iso" -graft-points "." /boot/grub/bios.img=isolinux/bios.img /EFI/efiboot.img=isolinux/efiboot.img

@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+echo "chroot_priv_script - run chroot things that need runtime privilege"
+# such as network changes
+
+mount none -t proc /proc
+mount none -t sysfs /sys
+mount none -t devpts /dev/pts
+export HOME=/root
+export LC_ALL=C
+
+echo "Configure DNS resolution to 8.8.8.8"
+dbus-uuidgen > /etc/machine-id
+ln -fs /etc/machine-id /var/lib/dbus/machine-id
+
+dpkg-divert --local --rename --add /sbin/initctl
+ln -s /bin/true /sbin/initctl
+
+dpkg-reconfigure -f noninteractive resolvconf
+
+# Use resolv.conf to 8.8.8.8
+mkdir -p /etc/NetworkManager
+mv NetworkManager.conf /etc/NetworkManager
+mv resolv.conf /etc
+dpkg-reconfigure -f noninteractive network-manager
+
+truncate -s 0 /etc/machine-id
+
+rm /sbin/initctl
+dpkg-divert --rename --remove /sbin/initctl
+
+echo "unmount"
+
+umount /proc
+umount /sys
+umount /dev/pts
+export HISTSIZE=0
+
+echo "chroot_priv_script done"
+

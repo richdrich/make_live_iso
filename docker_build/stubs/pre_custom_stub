@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+echo "pre_custom_stub replace this to build anything needed to be installed (outside chroot), etc"

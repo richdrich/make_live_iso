@@ -1,0 +1,18 @@
+#!/bin/bash -x
+set -e
+
+cd /live-ubuntu-from-scratch/chroot
+
+mkdir -p etc
+cp --remove-destination /etc/resolv.conf etc/resolv.conf
+ls -l etc/resolv.conf
+cat etc/resolv.conf
+
+mount --bind /dev /live-ubuntu-from-scratch/chroot/dev
+mount --bind /run /live-ubuntu-from-scratch/chroot/run
+
+chroot /live-ubuntu-from-scratch/chroot ./chroot_priv_script
+chroot /live-ubuntu-from-scratch/chroot ./chroot_custom
+
+umount -lf /live-ubuntu-from-scratch/chroot/dev
+umount /live-ubuntu-from-scratch/chroot/run
