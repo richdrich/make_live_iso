@@ -22,7 +22,6 @@ RUN chroot /live-ubuntu-from-scratch/chroot ./chrootscript
 ADD NetworkManager.conf /live-ubuntu-from-scratch/chroot
 ADD resolv.conf /live-ubuntu-from-scratch/chroot
 ADD lightdm.conf /live-ubuntu-from-scratch/chroot
-ADD dot_dmrc /live-ubuntu-from-scratch/chroot
 
 ADD README.diskdefines /root
 ADD build_iso /root

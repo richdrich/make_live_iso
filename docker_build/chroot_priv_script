@@ -46,7 +46,7 @@ apt-get install -y \
 apt-get remove -y gnome-session gnome gnome-shell
 apt-get install -y xfce4-session
 
-sudo apt-get autoremove
+sudo apt-get -y autoremove
 
 mv lightdm.conf /etc/lightdm/lightdm.conf
 mkdir -p /home/ubuntu
