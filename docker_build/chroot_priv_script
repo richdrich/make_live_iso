@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-
+set -x
+set -e
 echo "chroot_priv_script - run chroot things that need runtime privilege"
+export DEBIAN_FRONTEND=noninteractive
+
 # such as network changes
 
 mount none -t proc /proc
@@ -14,15 +17,40 @@ dbus-uuidgen > /etc/machine-id
 ln -fs /etc/machine-id /var/lib/dbus/machine-id
 
 dpkg-divert --local --rename --add /sbin/initctl
-ln -s /bin/true /sbin/initctl
+ln -sf /bin/true /sbin/initctl
 
-dpkg-reconfigure -f noninteractive resolvconf
+# dpkg-reconfigure -f noninteractive resolvconf
 
 # Use resolv.conf to 8.8.8.8
 mkdir -p /etc/NetworkManager
 mv NetworkManager.conf /etc/NetworkManager
 mv resolv.conf /etc
 dpkg-reconfigure -f noninteractive network-manager
+
+# Install xfce4 here
+apt-get install -y \
+    ssh \
+    dbus \
+    xfwm4 \
+    xfce4 \
+    xfce4-panel \
+    xfce4-settings \
+    xfconf \
+    xfce4-terminal \
+    xfce4-goodies \
+    xfdesktop4 \
+    xfce4-taskmanager \
+    ubuntu-wallpapers
+
+# sudo apt remove -y nautilus gnome-power-manager gnome-screensaver gnome-termina* gnome-pane* gnome-applet* gnome-bluetooth gnome-desktop* gnome-sessio* gnome-user* gnome-shell-common compiz compiz* unity unity* hud zeitgeist zeitgeist* python-zeitgeist libzeitgeist* activity-log-manager-common gnome-control-center gnome-screenshot overlay-scrollba*
+apt-get remove -y gnome-session gnome gnome-shell
+apt-get install -y xfce4-session
+
+sudo apt-get autoremove
+
+mv lightdm.conf /etc/lightdm/lightdm.conf
+mkdir -p /home/ubuntu
+chmod a+rw /home/ubuntu
 
 truncate -s 0 /etc/machine-id
 

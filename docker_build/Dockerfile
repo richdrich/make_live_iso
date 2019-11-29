@@ -19,8 +19,10 @@ WORKDIR /root
 ADD grub.cfg /root
 RUN chroot /live-ubuntu-from-scratch/chroot ./chrootscript
 
-ADD NetworkManager.conf /root/live-ubuntu-from-scratch/chroot
-ADD resolv.conf /root/live-ubuntu-from-scratch/chroot
+ADD NetworkManager.conf /live-ubuntu-from-scratch/chroot
+ADD resolv.conf /live-ubuntu-from-scratch/chroot
+ADD lightdm.conf /live-ubuntu-from-scratch/chroot
+ADD dot_dmrc /live-ubuntu-from-scratch/chroot
 
 ADD README.diskdefines /root
 ADD build_iso /root
@@ -39,3 +41,4 @@ ADD stubs/pre_custom_stub /root/pre_custom
 RUN chmod a+x /root/pre_custom
 ADD stubs/post_custom_stub /root/post_custom
 RUN chmod a+x /root/post_custom
+

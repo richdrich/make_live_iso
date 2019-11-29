@@ -26,7 +26,7 @@ ln -fs /etc/machine-id /var/lib/dbus/machine-id
 
 # dpkg-divert is the utility used to set up and update the list of diversions
 dpkg-divert --local --rename --add /sbin/initctl
-ln -s /bin/true /sbin/initctl
+ln -sf /bin/true /sbin/initctl
 
 echo 'install grub without prompting'
 
@@ -48,15 +48,7 @@ apt-get install -y \
     wireless-tools \
     wpagui \
     locales \
-    linux-generic \
-    xfwm4 \
-    xfce4-panel \
-    xfce4-settings \
-    xfce4-session \
-    xfce4-terminal \
-    xfdesktop4 \
-    xfce4-taskmanager \
-    tango-icon-theme
+    linux-generic
 
 echo 'clean up'
 
