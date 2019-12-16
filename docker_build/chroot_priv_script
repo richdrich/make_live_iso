@@ -28,6 +28,7 @@ mv resolv.conf /etc
 dpkg-reconfigure -f noninteractive network-manager
 
 # Install xfce4 here
+apt-get update
 apt-get install -y \
     ssh \
     dbus \
