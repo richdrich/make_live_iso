@@ -36,6 +36,16 @@ To write this to a USB stick or SD card, [Balena Etcher](https://www.balena.io/e
 
 If you have an issue in the build and a Docker container is left running, `./docker_rm` will fix.
 
+# ssh access
+
+If you want to configure your booted OS for ssh access (e.g. for development) then setting `SSH_PUB_KEY` to your public key path before 
+running `generate_iso` will do this. 
+This copies the public key into the `~ubuntu/.ssh/authorized_keys` which grants an SSH user access.
+You can then configure your ssh client to use the corresponding private key and log in as ubuntu.
+You may also want `StrictHostKeyChecking no` as the host id will change every time you build.
+
+* NOTE: this will authorize access to every system booted from the ISO and is of limited use for 'production' *  
+ 
 # Customization
 
 You can customise the ISO by extending the `make_live_iso` image.

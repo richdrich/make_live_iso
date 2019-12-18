@@ -1,5 +1,7 @@
 #!/usr/bin/env bash -e
 
+set -x
+
 # Run me on desktop, not in docker
 # before running this we have built our (customised) make_live_iso container and tagged it as make_live_iso
 # (just run ./docker_build_image from top level)

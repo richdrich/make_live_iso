@@ -25,6 +25,10 @@ container_id=`docker ps | tail -1 | awk '{ print $1 }'`
 
 docker exec -it $container_id /root/pre_custom
 
+if [ -n "$SSH_PUB_KEY" ]; then
+  docker cp $SSH_PUB_KEY $container_id:/live-ubuntu-from-scratch/chroot/ssh_key.pub
+fi
+
 docker exec --privileged -it $container_id /root/run_chroot_scripts
 
 docker exec -it $container_id /root/post_custom
