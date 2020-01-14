@@ -35,6 +35,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y grub-pc
 echo 'install ubuntu to chroot - around 874 packages'
 
 # TODO: slim
+apt-get update
 apt-get install -y \
     ubuntu-standard \
     casper \
