@@ -1,4 +1,4 @@
-FROM ubuntu:eoan
+FROM ubuntu:focal
 
 # Docker image that builds a live bootable iso based on the above Ubuntu
 
@@ -7,7 +7,7 @@ RUN echo "APT::Acquire::Retries \"3\";" > /etc/apt/apt.conf.d/80-retries
 RUN apt-get update && apt-get -y install dosfstools zip binutils debootstrap squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin mtools
 
 # Create the chroot
-RUN mkdir /live-ubuntu-from-scratch && debootstrap --arch=amd64 --variant=minbase eoan /live-ubuntu-from-scratch/chroot http://us.archive.ubuntu.com/ubuntu/
+RUN mkdir /live-ubuntu-from-scratch && debootstrap --arch=amd64 --variant=minbase focal /live-ubuntu-from-scratch/chroot http://us.archive.ubuntu.com/ubuntu/
 # RUN mount --bind /dev $HOME/live-ubuntu-from-scratch/chroot/dev && mount --bind /run $HOME/live-ubuntu-from-scratch/chroot/run
 
 # Run the system level chrootscript in the chroot
