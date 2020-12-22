@@ -18,7 +18,7 @@ EOF
 echo 'update and install systemv controller'
 echo "APT::Acquire::Retries \"3\";" > /etc/apt/apt.conf.d/80-retries
 apt-get update
-apt-get install -y systemd-sysv
+apt-get install --no-install-recommends -y systemd-sysv
 
 echo 'Configure (hex) machine-id and divert'
 dbus-uuidgen > /etc/machine-id
@@ -30,13 +30,13 @@ ln -sf /bin/true /sbin/initctl
 
 echo 'install grub without prompting'
 
-DEBIAN_FRONTEND=noninteractive apt-get install -y grub-pc
+DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y grub-pc
 
 echo 'install ubuntu to chroot - around 874 packages'
 
 # TODO: slim
 apt-get update
-apt-get install -y \
+apt-get install --no-install-recommends -y \
     ubuntu-standard \
     casper \
     lupin-casper \

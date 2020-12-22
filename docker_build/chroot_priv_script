@@ -42,7 +42,12 @@ apt-get install -y \
     xfce4-goodies \
     xfdesktop4 \
     xfce4-taskmanager \
-    ubuntu-wallpapers
+    ubuntu-wallpapers \
+    xorg \
+    lightdm \
+    gnupg\
+    ca-certificates openssl \
+    zip
 
 # sudo apt remove -y nautilus gnome-power-manager gnome-screensaver gnome-termina* gnome-pane* gnome-applet* gnome-bluetooth gnome-desktop* gnome-sessio* gnome-user* gnome-shell-common compiz compiz* unity unity* hud zeitgeist zeitgeist* python-zeitgeist libzeitgeist* activity-log-manager-common gnome-control-center gnome-screenshot overlay-scrollba*
 apt-get remove -y gnome-session gnome gnome-shell

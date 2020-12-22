@@ -4,7 +4,7 @@ FROM ubuntu:focal
 
 # Install the ISO making tools that we need
 RUN echo "APT::Acquire::Retries \"3\";" > /etc/apt/apt.conf.d/80-retries
-RUN apt-get update && apt-get -y install dosfstools zip binutils debootstrap squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin mtools
+RUN apt-get update && apt-get -y install dosfstools zip binutils debootstrap squashfs-tools xorriso grub-pc-bin grub-efi-amd64-bin mtools network-manager
 
 # Create the chroot
 RUN mkdir /live-ubuntu-from-scratch && debootstrap --arch=amd64 --variant=minbase focal /live-ubuntu-from-scratch/chroot http://us.archive.ubuntu.com/ubuntu/
